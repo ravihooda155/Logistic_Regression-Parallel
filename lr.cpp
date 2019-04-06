@@ -30,7 +30,7 @@ float get_random(){
 }
 class LR {
 public:
-    static double inner_prod(const double* v1, const double* v2, int n) {
+    static double vec_prod(const double* v1, const double* v2, int n) {
         double r = 0.0;
         for(int i = 0; i < n; ++i) {
             r += v1[i] * v2[i];
@@ -41,28 +41,22 @@ public:
         return exp(x)/ (1.0 + exp(x));
     }
     double binary(double* x){
-        return sigmoid(inner_prod(x, _weight_new, _dim) + _bias);
+        return sigmoid(vec_prod(x, _weight_new, _dim) + _bias);
     }
     double h(double* x) {
         return h(x, _weight_new, _dim, _bias);
     }
     double h(double* x, double* weight, int n, double bias) {
-        double y =  inner_prod(x, weight, n) + bias;
+        double y =  vec_prod(x, weight, n) + bias;
         return sigmoid(y);
     }
-    //y: 0,1
-    void fit(double**nx, int m, int n, double* y, double alpha = 0.01, double l2 = 0.0, double l1=0.0, int itr = 5000) {
+    void fit(double**nx, int m, int n, double* y, double alpha = 0.01, double l2 = 10, double l1=0.0, int itr = 5000) {
         int max_iters = itr;
         memset(_weight_old, 0, sizeof(_weight_old[0])*_dim);
         memset(_weight_new, 0, sizeof(_weight_new[0])*_dim);
         for (int i=0; i <_dim; ++i)
             _weight_old[i] = get_random();
-        // for(int i=0;i<_dim;i++){
-        //     cout<<_weight_old[i]<<" ";
-        // }
-        //cout<<endl;
-        //double** x = scale(nx, m, n);
-        double**x = nx;
+        double** x = nx;
         double* predict = new double[m];
 	
         double last_cross_entropy_loss = 0;
@@ -72,7 +66,6 @@ public:
             double cross_entropy_loss = 0;
             for(int i = 0; i < m; ++i) {
                 predict[i] = h(x[i], _weight_old, _dim, _bias_old);
-                //mrse += (y[i] - predict[i]) * (y[i] - predict[i]);
                 cross_entropy_loss += - (y[i]*log(predict[i]) + (1-y[i])*log(1-predict[i]));
             }
         
@@ -95,7 +88,6 @@ public:
             }
             _bias_old = _bias - alpha * g/m;
         }
-        //return distance(_weight_new, _weight_old, _dim);
     }
     void save(std::ostream& os) {
         os << "\t"<<"bias:" << _bias << " "<<endl;
@@ -184,7 +176,7 @@ int main(int argc, char* argv[]) {
     }
     cout<<cnt<<endl;
     cout<<"Confusion Matrix:"<<endl;
-     cout<<"Labels/Predict"<<endl;
+    cout<<"Labels/Predict"<<endl;
     cout<<" \t";
     for(int i=0;i<num_classes;i++)
         cout<<i<<"\t";
