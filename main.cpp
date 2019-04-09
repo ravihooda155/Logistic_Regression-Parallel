@@ -3,7 +3,7 @@
 #include <cmath>
 #include <memory>
 #include <fstream>
-#include "data.h"
+#include "utility.h"
 using namespace std;
 
 float get_random(){

@@ -1,7 +1,7 @@
-#include "data.h"
 #include<bits/stdc++.h>
 #include<cstring>
 #include <fstream>
+#include "utility.h"
 using namespace std;
 
 void csv_file(double** ptr,const char* train_feature,const char* train_target, double* labels) {
