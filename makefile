@@ -1,8 +1,8 @@
 
 CC = g++
 CFLAGS = -Wall -std=c++1z
-DEPS = data.h main.cpp
-OBJ = data.o  lr.o
+DEPS = utility.h main.cpp
+OBJ = utility.o  lr.o
 %.o: %.cpp $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
