@@ -1,10 +1,7 @@
 using namespace std;
 #include<bits/stdc++.h>
 #include <string>
-extern double** dmatrix(int row, int col);
-extern void  free_matrix(double**x, int row);
-extern double* dvector(int col);
-extern void free_vector(double* x);
-extern void csv_load_feature(const char* train_feature, double**x);
-extern void csv_read(const char* in_string, double*x);
-extern void load_target(const char* train_target, double* y);
+void csv_file(double** ptr,const char*,const char*,double*);
+extern double* new_1d_array(int);
+extern void free_1d_mem(double*);
+extern double** new_2d_array(int,int);

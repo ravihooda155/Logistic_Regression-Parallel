@@ -11,22 +11,23 @@ float get_random(){
     static std::uniform_real_distribution<> dis(0, 1); // rage 0 - 1
     return dis(e);
 }
- double** scale(double**x,int m, int n){
-        double** scale_x = dmatrix(m,n);
-        for(int i = 0; i < n ;++i){//feature
-            double mean = 0.0;
-            double var = 0.0;
+ double** scale(double **feature_matrix,int m, int n){
+ 	double mean,variance;
+        double** scale_feature = new_2d_array(m,n);
+        for(int i=0;i<n ;++i){//feature
+            mean = 0.0;
+            variance = 0.0;
             for(int j = 0; j < m; j++){
-                mean += x[j][i];
-                var += x[j][i] * x[j][i];
+                mean+=feature_matrix[j][i];
+                variance+=feature_matrix[j][i]*feature_matrix[j][i];
             }
             mean = mean/m;
-            var = var/m - mean * mean;
+            variance = variance/m - mean * mean;
             for(int j = 0; j < m; j++){
-                scale_x[j][i] = (x[j][i] - mean)/var;
+                scale_feature[j][i] = (feature_matrix[j][i]-mean)/variance;
             }
         }
-        return scale_x;
+        return scale_feature;
 }
 class LR {
 public:
@@ -118,41 +119,45 @@ int main(int argc, char* argv[]) {
     const char* target = argv[2];
     int num_classes = atoi(argv[5]);
     int row = atoi(argv[3]);
-    int col = atoi(argv[4]); //add bias
-    double**x = dmatrix(row, col);
-    double **scale_x = dmatrix(row, col);
-    double* y = dvector(row);
-    //load_data(train_instance, x,y);  //if train_target\ttrain_feature are merged in one file
-    csv_load_feature(feature, x);
-    load_target(target, y);
+    int col = atoi(argv[4]);
+    //cout<<"hello"<<endl;
+    double**x = new_2d_array(row,col);
+    double **scale_x = new_2d_array(row, col);
+    double* y = new_1d_array(row);
+    cout<<"array init done"<<endl;
+    csv_file(x,feature,target,y);
+    for(int i=0;i<5;i++){
+    	cout<<y[i]<<" ";
+    }
+    cout<<"\n";
+    cout<<"feature matrix read done"<<endl;
+    cout<<"Loading data....Done"<<endl;
     vector<LR> v;
     scale_x = scale(x,row, col);
-    for (int i = 0;i<num_classes; i++){
+    for(int i = 0;i<num_classes; i++){
         LR model(col);
-        int n = sizeof(y)/sizeof(y[0]);
-        double* y_temp = dvector(row);
+        int n=sizeof(y)/sizeof(y[0]);
+        double* y_temp=new_1d_array(row);
         for(int j=0;j<n;j++){
-            if(y[j]==i)
-                y_temp[j] = 1;
-            else
-                y_temp[j] = 0;
+            if(y[j]==i) y_temp[j] = 1;
+            else y_temp[j] = 0;
         }
         model.fit(scale_x, row, col, y_temp, 0.001);
         cout<<i<<endl;
         //model.save(std::cout);
         v.push_back(model);
     }
-    double** pred = dmatrix(row, num_classes);
+    double** pred = new_2d_array(row, num_classes);
     for(int j=0;j<num_classes;j++){
         LR model = v[j];
-        //double** confuse = dmatrix(num_classes, num_classes);
+        //double** confuse = new_2d_array(num_classes, num_classes);
         for(int i = 0; i < row; ++i) {
             pred[i][j] = model.binary(x[i]);
             //int label = (int)y[i];
             //confuse[label][pred]++;
         }
     }
-    double** confuse = dmatrix(num_classes, num_classes);
+    double** confuse = new_2d_array(num_classes,num_classes);
     int cnt = 0;
    
     for (int i=0;i<row;i++){
@@ -187,7 +192,6 @@ int main(int argc, char* argv[]) {
             cout<<confuse[i][j]<<"\t";
         }
         cout<<endl;
-    }
-    
+    } 
     return 0;
 }
