@@ -11,52 +11,54 @@ float get_random(){
     static std::uniform_real_distribution<> dis(0, 1); // rage 0 - 1
     return dis(e);
 }
- double** scale(double **feature_matrix,int m, int n){
- 	double mean,variance;
-        double** scale_feature = new_2d_array(m,n);
-        for(int i=0;i<n ;++i){//feature
-            mean = 0.0;
-            variance = 0.0;
-            for(int j = 0; j < m; j++){
-                mean+=feature_matrix[j][i];
-                variance+=feature_matrix[j][i]*feature_matrix[j][i];
+ double** scale(double**x,int m, int n){
+        double** x_scale = new_2d_array(m,n);
+        int i=0;
+        while(i<n)
+        {
+            double variance = 0.0;
+            double mean = 0.0;
+            int j=0;
+            while(j<m)
+            {
+                variance += x[j][i]*x[j][i];
+                mean += x[j][i];
+                j++;
             }
             mean = mean/m;
             variance = variance/m - mean * mean;
             for(int j = 0; j < m; j++){
-                scale_feature[j][i] = (feature_matrix[j][i]-mean)/variance;
+                x_scale[j][i] = (x[j][i] - mean)/variance;
             }
+            i++;
         }
-        return scale_feature;
+        return x_scale;
 }
 class LR {
 public:
-    static double vec_prod(const double* v1, const double* v2, int n) {
-        double r = 0.0;
-        for(int i = 0; i < n; ++i) {
-            r += v1[i] * v2[i];
+    static double vec_prod(const double* vect1, const double* vect2, int n) {
+        double res = 0.0;
+        int i=0;
+        while(i<n)
+        {
+            res+= vect2[i]*vect1[i];
+            i++;
         }
-        return r;
+        return res;
     }
     double sigmoid(double x) {
         return exp(x)/ (1.0 + exp(x));
     }
     double binary(double* x){
-        return sigmoid(vec_prod(x, _weight_new, _dim) + _bias);
+        return sigmoid(vec_prod(x, new_weights, dimensions) + _bias);
     }
-    double h(double* x) {
-        return h(x, _weight_new, _dim, _bias);
-    }
-    double h(double* x, double* weight, int n, double bias) {
-        double y =  vec_prod(x, weight, n) + bias;
-        return sigmoid(y);
-    }
+   
     void fit(double**nx, int m, int n, double* y, double alpha = 0.01, double l2 = 10, double l1=0.0, int itr = 5000) {
         int max_iters = itr;
-        memset(_weight_old, 0, sizeof(_weight_old[0])*_dim);
-        memset(_weight_new, 0, sizeof(_weight_new[0])*_dim);
-        for (int i=0; i <_dim; ++i)
-            _weight_old[i] = get_random();
+        memset(old_weights, 0, sizeof(old_weights[0])*dimensions);
+        memset(new_weights, 0, sizeof(new_weights[0])*dimensions);
+        for (int i=0; i <dimensions; ++i)
+            old_weights[i] = get_random();
         double** x = nx;
         double* predict = new double[m];
 	
@@ -66,85 +68,92 @@ public:
             double mrse = 0;
             double cross_entropy_loss = 0;
             for(int i = 0; i < m; ++i) {
-                predict[i] = h(x[i], _weight_old, _dim, _bias_old);
+                predict[i] = sigmoid(double( vec_prod(x[i], old_weights, dimensions) + old_bias));;
                 cross_entropy_loss += - (y[i]*log(predict[i]) + (1-y[i])*log(1-predict[i]));
             }
         
             last_cross_entropy_loss = cross_entropy_loss;
-            std::swap(_weight_old, _weight_new);
-            _bias = _bias_old;
+            std::swap(old_weights, new_weights);
+            _bias = old_bias;
             //update each weight
-            for(int k = 0; k < _dim; ++k) {
+            int k=0;
+            while(k<dimensions)
+             {
                 double gradient = 0.0;
-                for(int i = 0; i < m; ++i) {
-                    gradient += (predict[i] - y[i]) * x[i][k];
+                int i=0;
+                while(i<m) 
+                {
+                    gradient += x[i][k]*(predict[i] - y[i]);
+                    i++;
                 }
-                _weight_new[k] = _weight_old[k] - (alpha/m) *( gradient + l2 * _weight_old[k]);
-                //if (_weight_new[k] < 11){ _weight_new[k] = 0; }
+                new_weights[k] = old_weights[k] - (alpha/m) *( gradient + l2 * old_weights[k]);
+                k++;
+                //if (new_weights[k] < 11){ new_weights[k] = 0; }
             }
             //update bias
             double g = 0.0;
             for(int i = 0; i < m; ++i) {
                 g += (predict[i] - y[i]);
             }
-            _bias_old = _bias - alpha * g/m;
+            old_bias = _bias - alpha * g/m;
         }
     }
-    void save(std::ostream& os) {
-        os << "\t"<<"bias:" << _bias << " "<<endl;
-        for(int i = 0; i < _dim; ++i)
-            os <<"\t" << i << ":" << _weight_new[i] << " "<<endl ;
-        os << endl;
+    void save() {
+        cout<< "\t"<<"Bias:" << _bias << " "<<endl;
+        for(int i = 0; i < dimensions; i++)
+        {    cout <<"\t" << i << ":" << new_weights[i];
+             cout << " "<<endl ;
+        }
+        cout << endl;
     }
-    LR(int dim): _dim(dim) {
-        _weight_new = new double[dim];
-        _weight_old = new double[dim];
+    LR(int dim): dimensions(dim) {
+        new_weights = new double[dim];
+        old_weights = new double[dim];
         _bias = 0.0;
-        _bias_old = 0.0;
+        old_bias = 0.0;
     }
 private:
-    double* _weight_old;
-    double* _weight_new;
-    int _dim;
+    
+    int dimensions;
     double _bias;
-    double _bias_old;
+    double old_bias;
+    double* old_weights;
+    double* new_weights;
 };
 int main(int argc, char* argv[]) {
-    if(argc < 5) {
-        cerr << "Usage: " << argv[0] << " <train_feature> <train_target> <rows> <cols> <classes> [test]" << endl
-             << "\t data_file: the training date\n";
-        return -1;
+    if(argc < 6) {
+        cout<< "Incorrect Input Format";
+        exit;
     }
-    const char* feature = argv[1];
-    const char* target = argv[2];
-    int num_classes = atoi(argv[5]);
-    int row = atoi(argv[3]);
-    int col = atoi(argv[4]);
-    //cout<<"hello"<<endl;
-    double**x = new_2d_array(row,col);
+    
+    
+    const char* feature_num = argv[4];
+    int num_classes = atoi(argv[3]);
+    
+    int col = atoi(argv[2]); 
+    int row = atoi(argv[1]);
+    const char* target_values = argv[5];
+    double**x = new_2d_array(row, col);
     double **scale_x = new_2d_array(row, col);
     double* y = new_1d_array(row);
-    cout<<"array init done"<<endl;
-    csv_file(x,feature,target,y);
-    for(int i=0;i<5;i++){
-    	cout<<y[i]<<" ";
-    }
-    cout<<"\n";
-    cout<<"feature matrix read done"<<endl;
-    cout<<"Loading data....Done"<<endl;
+    //load_data(train_instance, x,y);  //if train_target\ttrain_feature are merged in one file
+   
+    csv_file(x,feature_num,target_values,y);
     vector<LR> v;
     scale_x = scale(x,row, col);
-    for(int i = 0;i<num_classes; i++){
+    for (int i = 0;i<num_classes; i++){
         LR model(col);
-        int n=sizeof(y)/sizeof(y[0]);
-        double* y_temp=new_1d_array(row);
+        int n = sizeof(y)/sizeof(y[0]);
+        double* y_temp = new_1d_array(row);
         for(int j=0;j<n;j++){
-            if(y[j]==i) y_temp[j] = 1;
-            else y_temp[j] = 0;
+            if(y[j]==i)
+                y_temp[j] = 1;
+            else
+                y_temp[j] = 0;
         }
         model.fit(scale_x, row, col, y_temp, 0.001);
         cout<<i<<endl;
-        //model.save(std::cout);
+        model.save();
         v.push_back(model);
     }
     double** pred = new_2d_array(row, num_classes);
@@ -157,7 +166,7 @@ int main(int argc, char* argv[]) {
             //confuse[label][pred]++;
         }
     }
-    double** confuse = new_2d_array(num_classes,num_classes);
+    double** confuse = new_2d_array(num_classes, num_classes);
     int cnt = 0;
    
     for (int i=0;i<row;i++){
@@ -192,6 +201,7 @@ int main(int argc, char* argv[]) {
             cout<<confuse[i][j]<<"\t";
         }
         cout<<endl;
-    } 
+    }
+    
     return 0;
 }
