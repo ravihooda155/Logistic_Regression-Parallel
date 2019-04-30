@@ -3,6 +3,8 @@
 #include <cmath>
 #include <memory>
 #include <fstream>
+#include "data.h"
+
 #include "utility.h"
 using namespace std;
 
@@ -47,18 +49,18 @@ public:
         return res;
     }
     double sigmoid(double x) {
-        return exp(x)/ (1.0 + exp(x));
+        return 1/ (1.0 + exp(-x));
     }
     double binary(double* x){
         return sigmoid(vec_prod(x, new_weights, dimensions) + _bias);
     }
-   
-    void fit(double**nx, int m, int n, double* y, double alpha = 0.01, double l2 = 10, double l1=0.0, int itr = 5000) {
+    void fit(double**nx, int m, int n, int* y, double alpha = 1.0, double l2 = 10, double l1=0.0, int itr = 100000) {
         int max_iters = itr;
-        memset(old_weights, 0, sizeof(old_weights[0])*dimensions);
-        memset(new_weights, 0, sizeof(new_weights[0])*dimensions);
-        for (int i=0; i <dimensions; ++i)
-            old_weights[i] = get_random();
+        vector<double> loss;
+        memset(_weight_old, 0, sizeof(_weight_old[0])*_dim);
+        memset(_weight_new, 0, sizeof(_weight_new[0])*_dim);
+        for (int i=0; i <_dim; ++i)
+            _weight_old[i] = get_random();
         double** x = nx;
         double* predict = new double[m];
 	
@@ -68,10 +70,11 @@ public:
             double mrse = 0;
             double cross_entropy_loss = 0;
             for(int i = 0; i < m; ++i) {
-                predict[i] = sigmoid(double( vec_prod(x[i], old_weights, dimensions) + old_bias));;
-                cross_entropy_loss += - (y[i]*log(predict[i]) + (1-y[i])*log(1-predict[i]));
+                predict[i] = h(x[i], _weight_old, _dim, _bias_old);
+                cross_entropy_loss += - ((y[i]*log(predict[i]) + (1-y[i])*log(1-predict[i]))/m);
+                //cout<<cross_entropy_loss<<endl;
             }
-        
+            loss.emplace_back(cross_entropy_loss);
             last_cross_entropy_loss = cross_entropy_loss;
             std::swap(old_weights, new_weights);
             _bias = old_bias;
@@ -95,7 +98,9 @@ public:
             for(int i = 0; i < m; ++i) {
                 g += (predict[i] - y[i]);
             }
-            old_bias = _bias - alpha * g/m;
+            _bias_old = _bias - alpha * g/m;
+            if(iter%1000==0)
+                cout<<cross_entropy_loss<<endl;
         }
     }
     void save() {
@@ -125,26 +130,40 @@ int main(int argc, char* argv[]) {
         cout<< "Incorrect Input Format";
         exit;
     }
-    
-    
-    const char* feature_num = argv[4];
-    int num_classes = atoi(argv[3]);
-    
-    int col = atoi(argv[2]); 
-    int row = atoi(argv[1]);
-    const char* target_values = argv[5];
-    double**x = new_2d_array(row, col);
-    double **scale_x = new_2d_array(row, col);
-    double* y = new_1d_array(row);
+    const char* feature = argv[1];
+    //const char* target = argv[2];
+    int num_classes = atoi(argv[5]);
+    int row = atoi(argv[3]);
+    int col = atoi(argv[4]); //add bias
+    double **data = dmatrix(row,col+1);
+    double **x = dmatrix(row, col);
+    double **scale_x = dmatrix(row, col);
+    int* y = resvector(row);
     //load_data(train_instance, x,y);  //if train_target\ttrain_feature are merged in one file
-   
-    csv_file(x,feature_num,target_values,y);
+    csv_load_feature(feature, data);
+    //printf("fi/n");
+    for (int i=0; i<row; i++){
+        for (int j=0;j<=col; j++){
+            if(j<col){
+                x[i][j] = data[i][j];
+                //printf("%f ", x[i][j]);
+            }
+            else
+            {
+                y[i] = data[i][j]-1;
+                //printf("%d ", y[i]);
+            }
+            
+        }
+        //cout<<endl;
+    }
+    //load_target(target, y);
     vector<LR> v;
     scale_x = scale(x,row, col);
     for (int i = 0;i<num_classes; i++){
         LR model(col);
         int n = sizeof(y)/sizeof(y[0]);
-        double* y_temp = new_1d_array(row);
+        int* y_temp = resvector(row);
         for(int j=0;j<n;j++){
             if(y[j]==i)
                 y_temp[j] = 1;
@@ -161,7 +180,7 @@ int main(int argc, char* argv[]) {
         LR model = v[j];
         //double** confuse = new_2d_array(num_classes, num_classes);
         for(int i = 0; i < row; ++i) {
-            pred[i][j] = model.binary(x[i]);
+            pred[i][j] = model.binary(scale_x[i]);
             //int label = (int)y[i];
             //confuse[label][pred]++;
         }
@@ -178,10 +197,10 @@ int main(int argc, char* argv[]) {
                 cl = j;
                 //cout<<j<<" "<<5<<endl;
             }
-            //cout<<pred[i][j]<<" ";
+            cout<<pred[i][j]<<" ";
         }
         //cout<<cl<<endl;
-        //cout<<endl;
+        cout<<endl;
         int label = (int)y[i];
         //cout<<label<<" ";
         if(label==cl)
