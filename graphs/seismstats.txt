@@ -1,0 +1,59 @@
+cross_entropy_loss:inf
+cross_entropy_loss:0.0974637
+cross_entropy_loss:0.0488285
+cross_entropy_loss:0.0330121
+cross_entropy_loss:0.024941
+cross_entropy_loss:0.0200318
+cross_entropy_loss:0.016731
+cross_entropy_loss:0.0143602
+cross_entropy_loss:0.0125756
+cross_entropy_loss:0.011184
+cross_entropy_loss:0.0100686
+0
+cross_entropy_loss:nan
+cross_entropy_loss:0.387699
+cross_entropy_loss:0.368617
+cross_entropy_loss:0.364178
+cross_entropy_loss:0.36163
+cross_entropy_loss:0.359935
+cross_entropy_loss:0.358708
+cross_entropy_loss:0.35777
+cross_entropy_loss:0.357022
+cross_entropy_loss:0.356408
+cross_entropy_loss:0.355891
+1
+cross_entropy_loss:inf
+cross_entropy_loss:0.47732
+cross_entropy_loss:0.463956
+cross_entropy_loss:0.461702
+cross_entropy_loss:0.460837
+cross_entropy_loss:0.460428
+cross_entropy_loss:0.460216
+cross_entropy_loss:0.460101
+cross_entropy_loss:0.460037
+cross_entropy_loss:0.46
+cross_entropy_loss:0.459978
+2
+cross_entropy_loss:nan
+cross_entropy_loss:0.426721
+cross_entropy_loss:0.373957
+cross_entropy_loss:0.372399
+cross_entropy_loss:0.3721
+cross_entropy_loss:0.371955
+cross_entropy_loss:0.37187
+cross_entropy_loss:0.371817
+cross_entropy_loss:0.371784
+cross_entropy_loss:0.371763
+cross_entropy_loss:0.371749
+3
+44655
+Confusion Matrix:
+Labels/Predict
+ 	0	1	2	3	
+0	0	0	0	0	
+1	0	2393	1023	195	
+2	0	1072	2301	857	
+3	0	534	865	6525	
+Train Accuracy:0.708158
+Test Accuracy:0.71164
+Total execution time:221.339

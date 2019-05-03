@@ -1,0 +1,85 @@
+cross_entropy_loss:2.8492
+cross_entropy_loss:0.41304
+cross_entropy_loss:0.0897302
+cross_entropy_loss:0.038745
+cross_entropy_loss:0.0235712
+cross_entropy_loss:0.0168603
+cross_entropy_loss:0.0131439
+cross_entropy_loss:0.0107918
+cross_entropy_loss:0.00916989
+cross_entropy_loss:0.00798343
+cross_entropy_loss:0.00707725
+-----------------
+cross_entropy_loss:2.61689
+cross_entropy_loss:0.493088
+cross_entropy_loss:0.214254
+cross_entropy_loss:0.137353
+cross_entropy_loss:0.104676
+cross_entropy_loss:0.0870296
+cross_entropy_loss:0.0760667
+cross_entropy_loss:0.0685954
+cross_entropy_loss:0.0631752
+cross_entropy_loss:0.059055
+cross_entropy_loss:0.0558023
+-----------------
+cross_entropy_loss:3.46176
+cross_entropy_loss:0.612318
+cross_entropy_loss:0.284134
+cross_entropy_loss:0.174128
+cross_entropy_loss:0.128959
+cross_entropy_loss:0.106781
+cross_entropy_loss:0.0938255
+cross_entropy_loss:0.0852428
+cross_entropy_loss:0.0790384
+cross_entropy_loss:0.0742798
+cross_entropy_loss:0.0704776
+-----------------
+2
+cross_entropy_loss:1.96467
+cross_entropy_loss:0.643796
+cross_entropy_loss:0.380579
+cross_entropy_loss:0.264024
+cross_entropy_loss:0.201904
+cross_entropy_loss:0.166584
+cross_entropy_loss:0.144798
+cross_entropy_loss:0.130156
+cross_entropy_loss:0.119686
+cross_entropy_loss:0.111909
+cross_entropy_loss:0.105975
+-----------------
+3
+1567
+Confusion Matrix:
+Labels/Predict
+ 	0	1	2	3	
+0	0	0	0	0	
+1	0	93	0	8	
+2	0	2	86	2	
+3	0	2	9	198	
+Train Accuracy:0.979375
+Test Accuracy:0.9425
+
+With 1 thread
+
+real    0m17.495s
+user    0m17.472s
+sys     0m0.020s
+
+With 2 threads
+
+real    0m9.892s
+user    0m19.693s
+sys     0m0.028s
+
+With 4 threads
+
+real    0m8.772s
+user    0m32.504s
+sys     0m0.104s
+
+With 8 threads
+
+real    0m8.906s
+user    0m32.445s
+sys     0m0.168s
+
