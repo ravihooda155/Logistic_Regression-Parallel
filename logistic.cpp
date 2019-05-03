@@ -126,8 +126,8 @@ void LogisticRegression::fit(double **nx, int m, int n, double *y, double alpha,
                 cross_entropy_loss += -((y[i] * log(predict[i]) + (1 - y[i]) * log(1 - predict[i])) / m);
                 std::swap(old_weights, new_weights);
             }
-            if (iter % 100 == 0)
-                cout << "cross_entropy_loss:" << cross_entropy_loss << endl;
+            //if (iter % 100 == 0)
+            //    cout << "cross_entropy_loss:" << cross_entropy_loss << endl;
         }
     }
 }

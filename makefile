@@ -6,6 +6,6 @@ OBJ = utility.o logistic.o sgd.o
 %.o: %.cpp $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-logistic_regression: $(OBJ)
+logistic_regression_sgd: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
 

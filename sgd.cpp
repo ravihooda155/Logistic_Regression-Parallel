@@ -82,8 +82,8 @@ int main(int argc, char *argv[])
                     y_temp[j] = 0;
             }
             model.fit(scale_train_x,train_row, col,y_temp,0.1,0,0,0);
-            cout<<"-----------------"<<endl;
-            cout << i << endl;
+            //cout<<"-----------------"<<endl;
+            //cout << i << endl;
             models[i] = model;
         }
         //cout<<models.size()<<endl;
