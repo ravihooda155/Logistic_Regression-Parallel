@@ -1,0 +1,11 @@
+
+CC = g++
+CFLAGS = -Wall -std=c++11 -fopenmp
+DEPS = utility.h logistic_bgd.h 
+OBJ = utility.o logistic_bgd.o bgd.o 
+%.o: %.cpp $(DEPS)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+logistic_regression_bgd: $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^
+
