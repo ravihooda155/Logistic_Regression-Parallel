@@ -132,7 +132,3 @@ void LogisticRegression::fit(double **nx, int m, int n, double *y, double alpha,
     }
 }
 
-// ~LogisticRegression() {
-//     delete[] old_weights;
-//     delete[] new_weights;
-// }
